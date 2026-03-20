@@ -289,8 +289,8 @@ setInterval(() => {
   }
 }, 150);
 
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
 httpServer.listen(PORT, "0.0.0.0", () => {
-  console.log("\n🚀 SERVER RUNNING ON PORT 3001");
-  console.log("📡 http://localhost:3001\n");
+  console.log(`\n🚀 SERVER RUNNING ON PORT ${PORT}`);
+  console.log(`📡 http://localhost:${PORT}\n`);
 });
