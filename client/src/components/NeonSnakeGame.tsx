@@ -361,7 +361,7 @@ const NeonSnakeGame: React.FC = () => {
           </div>
 
           <div 
-            className="border-4 border-purple-500 rounded-lg shadow-[0_0_30px_rgba(168,85,247,0.5)] bg-black overflow-hidden relative"
+            className="border-4 border-purple-500 rounded-lg shadow-[0_0_30px_rgba(168,85,247,0.5)] bg-black overflow-hidden relative w-full max-w-[600px] aspect-square max-h-[50vh] md:max-h-none flex justify-center items-center"
             onTouchStart={handleTouchStart}
             onTouchEnd={handleTouchEnd}
           >
@@ -369,7 +369,7 @@ const NeonSnakeGame: React.FC = () => {
               ref={canvasRef}
               width={CANVAS_SIZE}
               height={CANVAS_SIZE}
-              className="block"
+              className="block w-full h-full object-contain"
             />
             {currentPlayer?.isAlive === false && (
               <div className="absolute inset-0 bg-black/80 flex items-center justify-center backdrop-blur-sm">
@@ -392,8 +392,8 @@ const NeonSnakeGame: React.FC = () => {
           </div>
 
           {/* Mobile D-Pad */}
-          <div className="mt-6 md:hidden flex justify-center w-full">
-            <div className="grid grid-cols-3 gap-2 w-48 h-48">
+          <div className="mt-2 md:hidden flex justify-center w-full">
+            <div className="grid grid-cols-3 gap-1 w-40 h-40">
               <div />
               <button 
                 className="bg-purple-600/50 hover:bg-purple-500 rounded-lg active:bg-purple-400 flex items-center justify-center text-3xl shadow-[0_0_15px_rgba(168,85,247,0.3)] transition-colors"
