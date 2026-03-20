@@ -105,7 +105,7 @@ function updateLeaderboard(player: Player) {
 }
 
 // Helper functions
-function generateFood(players: Player[], gridSize: number = 20) {
+function generateFood(players: Player[], gridSize: number = 30) {
   const occupied = new Set<string>();
   players.forEach((p) => {
     if (p.isAlive) {
@@ -127,7 +127,7 @@ function generateFood(players: Player[], gridSize: number = 20) {
 
 function checkCollision(
   snake: { x: number; y: number }[],
-  gridSize: number = 20,
+  gridSize: number = 30,
 ) {
   if (snake.length === 0) return true;
   const head = snake[0];
@@ -151,7 +151,7 @@ io.on("connection", (socket) => {
       gameRooms.set(roomId, {
         players: new Map(),
         food: { x: 10, y: 10 },
-        gridSize: 20,
+        gridSize: 30,
       });
     }
 

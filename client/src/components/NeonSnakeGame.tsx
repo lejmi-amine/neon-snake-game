@@ -28,7 +28,7 @@ interface LeaderboardEntry {
   score: number;
 }
 
-const GRID_SIZE = 20;
+const GRID_SIZE = 30;
 const CELL_SIZE = 20;
 const CANVAS_SIZE = GRID_SIZE * CELL_SIZE;
 
