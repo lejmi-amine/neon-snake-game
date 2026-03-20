@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { io, Socket } from "socket.io-client";
 
 interface Position {
@@ -45,6 +45,44 @@ const NeonSnakeGame: React.FC = () => {
   const [connectionStatus, setConnectionStatus] =
     useState<string>("Connecting...");
   const [debugInfo, setDebugInfo] = useState<string>("");
+
+  const touchStartRef = useRef<{ x: number; y: number } | null>(null);
+
+  const changeDirection = useCallback(
+    (newDirection: "up" | "down" | "left" | "right") => {
+      if (socket && inGame) {
+        socket.emit("player-direction", { direction: newDirection });
+      }
+    },
+    [socket, inGame],
+  );
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartRef.current = {
+      x: e.touches[0].clientX,
+      y: e.touches[0].clientY,
+    };
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (!touchStartRef.current) return;
+    const touchEndX = e.changedTouches[0].clientX;
+    const touchEndY = e.changedTouches[0].clientY;
+
+    const dx = touchEndX - touchStartRef.current.x;
+    const dy = touchEndY - touchStartRef.current.y;
+
+    if (Math.abs(dx) > Math.abs(dy)) {
+      if (Math.abs(dx) > 30) {
+        changeDirection(dx > 0 ? "right" : "left");
+      }
+    } else {
+      if (Math.abs(dy) > 30) {
+        changeDirection(dy > 0 ? "down" : "up");
+      }
+    }
+    touchStartRef.current = null;
+  };
 
   useEffect(() => {
     console.log("🔵 Starting connection test...");
@@ -119,8 +157,7 @@ const NeonSnakeGame: React.FC = () => {
 
       if (newDirection) {
         e.preventDefault();
-        // Use correct event name: "player-direction" not "change-direction"
-        socket.emit("player-direction", { direction: newDirection });
+        changeDirection(newDirection);
       }
     };
 
@@ -323,7 +360,11 @@ const NeonSnakeGame: React.FC = () => {
             <div className="text-purple-400">ROOM: {roomId}</div>
           </div>
 
-          <div className="border-4 border-purple-500 rounded-lg shadow-[0_0_30px_rgba(168,85,247,0.5)] bg-black overflow-hidden relative">
+          <div 
+            className="border-4 border-purple-500 rounded-lg shadow-[0_0_30px_rgba(168,85,247,0.5)] bg-black overflow-hidden relative"
+            onTouchStart={handleTouchStart}
+            onTouchEnd={handleTouchEnd}
+          >
             <canvas
               ref={canvasRef}
               width={CANVAS_SIZE}
@@ -346,8 +387,36 @@ const NeonSnakeGame: React.FC = () => {
               </div>
             )}
           </div>
-          <div className="mt-4 text-gray-400 text-sm w-full text-center">
+          <div className="mt-4 text-gray-400 text-sm w-full text-center hidden md:block">
             ⬆️⬇️⬅️➡️ or WASD to move
+          </div>
+
+          {/* Mobile D-Pad */}
+          <div className="mt-6 md:hidden flex justify-center w-full">
+            <div className="grid grid-cols-3 gap-2 w-48 h-48">
+              <div />
+              <button 
+                className="bg-purple-600/50 hover:bg-purple-500 rounded-lg active:bg-purple-400 flex items-center justify-center text-3xl shadow-[0_0_15px_rgba(168,85,247,0.3)] transition-colors"
+                onTouchStart={(e) => { e.preventDefault(); changeDirection("up"); }}
+                onClick={(e) => { e.preventDefault(); changeDirection("up"); }}
+              >⬆️</button>
+              <div />
+              <button 
+                className="bg-cyan-600/50 hover:bg-cyan-500 rounded-lg active:bg-cyan-400 flex items-center justify-center text-3xl shadow-[0_0_15px_rgba(6,182,212,0.3)] transition-colors"
+                onTouchStart={(e) => { e.preventDefault(); changeDirection("left"); }}
+                onClick={(e) => { e.preventDefault(); changeDirection("left"); }}
+              >⬅️</button>
+              <button 
+                className="bg-purple-600/50 hover:bg-purple-500 rounded-lg active:bg-purple-400 flex items-center justify-center text-3xl transition-colors"
+                onTouchStart={(e) => { e.preventDefault(); changeDirection("down"); }}
+                onClick={(e) => { e.preventDefault(); changeDirection("down"); }}
+              >⬇️</button>
+              <button 
+                className="bg-cyan-600/50 hover:bg-cyan-500 rounded-lg active:bg-cyan-400 flex items-center justify-center text-3xl shadow-[0_0_15px_rgba(6,182,212,0.3)] transition-colors"
+                onTouchStart={(e) => { e.preventDefault(); changeDirection("right"); }}
+                onClick={(e) => { e.preventDefault(); changeDirection("right"); }}
+              >➡️</button>
+            </div>
           </div>
         </div>
 
